@@ -9,6 +9,8 @@
 #include "graphics.h"
 #include "tools.h"
 
+#include <matrix-config.h>
+
 const static unsigned char waiting[] = {
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xde, 0xff, 0xff, 0xff, 0xff,
         0xf7, 0xff, 0xff, 0xff, 0xaa, 0xd2, 0x9c, 0x7f, 0xff, 0xab, 0x56, 0xaa,
@@ -112,6 +114,12 @@ out:
 }
 
 int main(void) {
+    printf("Hello, this Kitchen-Matrix %s.%s (sources: %s-%s)\n",
+        MATRIX_VERSION_MAJOR,
+	MATRIX_VERSION_MINOR,
+	MATRIX_GIT_BRANCH,
+	MATRIX_GIT_COMMIT_HASH);
+
     printf("Initializing Hardware....\n");
     matrix_init();
 

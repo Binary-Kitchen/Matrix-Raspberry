@@ -24,8 +24,6 @@ void matrix_update(picture_t *picture) {
     int bitno;
     unsigned int i;
     
-    //print_picture(picture);
-    
     BLANK_LOW(); // Matrix aus
     for(bitno = 0 ; bitno < BITS_PER_PANEL ; bitno++) { // Iteriere über die Anzahl der Bits Pro Panel
         shift_out( (*picture)+NUM_SHIFTERS*bitno, NUM_SHIFTERS); // Gib das jeweilige Bit für alle Panels aus
@@ -50,10 +48,6 @@ void matrix_init(void) {
   pinMode(PIXEL_CLOCK_PIN, OUTPUT);
 
   BLANK_HIGH(); // Matrix an
-
-  printf("Num Shifters: %d\n", NUM_SHIFTERS);
-  printf("Bits per Panel: %d\n", BITS_PER_PANEL);
-  printf("Number Panels: %d\n\n\n", NUM_PANELS);
 }
 
 void matrix_close(void) {
@@ -61,13 +55,3 @@ void matrix_close(void) {
 }
 
 unsigned int timetable[NUM_PICTURES_PER_FRAME] = {5000, 1000};
-
-void matrix_run() {
-    int i;
-    while(1)
-        for(i=0;i<NUM_PICTURES_PER_FRAME;i++) {
-            matrix_update(&cur_frame[i]);
-            //usleep(timetable[i]);
-            sleep(1);
-        }
-}

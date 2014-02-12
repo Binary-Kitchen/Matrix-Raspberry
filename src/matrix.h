@@ -38,10 +38,5 @@ typedef picture_t frame_t[NUM_PICTURES_PER_FRAME];
 void matrix_init(void);
 void matrix_close(void);
 
-void matrix_set_frame(frame_t *frame);
-
 void matrix_update(picture_t *picture);
-
-void matrix_run();
-
 #endif

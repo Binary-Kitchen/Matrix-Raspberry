@@ -6,8 +6,8 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 SET(CMAKE_SYSTEM_NAME Linux)
 
-set(MATRIX_GIT_MAJOR "\"0\"")
-set(MATRIX_GIT_MINOR "\"1\"")
+set(MATRIX_VERSION_MAJOR "\"0\"")
+set(MATRIX_VERSION_MINOR "\"2\"")
 
 # Get the current working branch
 execute_process(
@@ -40,11 +40,10 @@ configure_file(
 )
 
 set(MATRIX_SRCS src/74hc595.c src/74hc595.h
-                src/GPIO.c  src/GPIO.h
-                src/SPI.c  src/SPI.h
+                src/SPI.c src/SPI.h
                 src/graphics.c src/graphics.h
-                src/main.c  src/matrix.c
-                src/matrix.h  src/tools.c
+                src/main.c src/matrix.c
+                src/matrix.h src/tools.c
                 src/tools.h
                 src/main.c)
 
