@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-
 #include <wiringPi.h>
 
 #include "74hc595.h"
@@ -11,38 +8,31 @@
 #define RCK_HIGH() digitalWrite(RCK_PIN, 1)
 #define RCK_LOW()  digitalWrite(RCK_PIN, 0)
 
-int shift_init(int speed) {
-  wiringPiSetup();
+int shift_init(int speed)
+{
+	wiringPiSetup();
 
-  pinMode(RCK_PIN, OUTPUT);
-  pinMode(SCL_PIN, OUTPUT);
+	pinMode(RCK_PIN, OUTPUT);
+	pinMode(SCL_PIN, OUTPUT);
 
-  RCK_LOW();
-  SCL_HIGH();
+	RCK_LOW();
+	SCL_HIGH();
 
-  SPI_setup(speed);
+	SPI_setup(speed);
 
-  return 0;
+	return 0;
 }
 
-inline int shift_out(unsigned char *data, size_t length) {
-  // !FIXIT _massivst_ inperformant
+inline void shift_out(unsigned char *data, size_t length)
+{
+	SPI_write(data, length);
 
-  // Bits auf's Schieberegister
-  //wiringPiSPIDataW(0, data, length);
-  //RCK_LOW();
-  SPI_write(data,length);
-  //RCK_HIGH();
-
-  // Phaser feuern.
-  RCK_HIGH();
-  RCK_LOW();
-
-  //free(tmp);
-  return 0;
+    // fire
+	RCK_HIGH();
+    RCK_LOW();
 }
 
-int shift_close() {
+void shift_close()
+{
     SPI_close();
-    return 0;
 }

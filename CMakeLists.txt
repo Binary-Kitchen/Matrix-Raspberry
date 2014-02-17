@@ -7,7 +7,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 SET(CMAKE_SYSTEM_NAME Linux)
 
 set(MATRIX_VERSION_MAJOR "\"0\"")
-set(MATRIX_VERSION_MINOR "\"2\"")
+set(MATRIX_VERSION_MINOR "\"3\"")
 
 # Get the current working branch
 execute_process(
@@ -27,12 +27,12 @@ execute_process(
 )
 set(GIT_COMMIT_HASH "\"${GIT_COMMIT_HASH}\"")
 
-set(CMAKE_C_FLAGS_DEBUG "-ggdb -O0 -Wall -Wpedantic -Wextra -pedantic")
+set(CMAKE_C_FLAGS "-ggdb -O3 -Wall -Wextra")
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories("${PROJECT_SOURCE_DIR}")
 
-include_directories("${PROJECT_BINARY_DIR}/wiringPi/wiringPi")
+find_package (Threads)
 
 configure_file(
   "${PROJECT_SOURCE_DIR}/matrix-config.h.in"
@@ -48,4 +48,4 @@ set(MATRIX_SRCS src/74hc595.c src/74hc595.h
                 src/main.c)
 
 add_executable(Matrix-Raspberry ${MATRIX_SRCS})
-target_link_libraries(Matrix-Raspberry wiringPi)
+target_link_libraries(Matrix-Raspberry wiringPi ${CMAKE_THREAD_LIBS_INIT})

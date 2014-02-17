@@ -3,6 +3,6 @@
 
 #include "graphics.h"
 
-void print_picture(picture_t *pic);
+void print_picture(picture_t * pic);
 
 #endif

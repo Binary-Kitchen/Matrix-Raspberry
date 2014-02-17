@@ -2,7 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/poll.h>
+#include <pthread.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <errno.h>
 
 #include "74hc595.h"
 #include "matrix.h"
@@ -11,132 +14,150 @@
 
 #include <matrix-config.h>
 
-const static unsigned char waiting[] = {
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xde, 0xff, 0xff, 0xff, 0xff,
-        0xf7, 0xff, 0xff, 0xff, 0xaa, 0xd2, 0x9c, 0x7f, 0xff, 0xab, 0x56, 0xaa,
-        0xff, 0xff, 0xaa, 0x56, 0xad, 0xff, 0xff, 0xd6, 0x5a, 0xaa, 0xff, 0xff,
-        0xff, 0xff, 0xfd, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xdf, 0xff, 0xff,
-        0xff, 0xff, 0xb6, 0xbf, 0xff, 0xff, 0xff, 0x0a, 0x7f, 0xff, 0xff, 0xff,
-        0xaa, 0xff, 0xff, 0xff, 0xff, 0xb6, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xfb, 0xff, 0xff, 0xff, 0xff, 0xdf, 0xff, 0xee, 0xcc, 0xee,
-        0xcb, 0x67, 0xdd, 0x55, 0x45, 0xda, 0xab, 0xdd, 0x55, 0x5d, 0xda, 0xab,
-        0xee, 0xd5, 0x6e, 0xeb, 0x6b, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x0c, 0x30, 0xc3, 0x0c,
-        0x30, 0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x6d,
-        0xb6, 0xdb, 0x6d, 0xb6, 0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x61, 0x86, 0x18,
-        0x61, 0x86, 0xff, 0xff, 0xff, 0xff, 0xff, 0x0c, 0x30, 0xc3, 0x0c, 0x30,
-        0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x6d, 0xb6,
-        0xdb, 0x6d, 0xb6, 0x6d, 0xb6, 0xdb, 0x6d, 0xb6, 0x61, 0x86, 0x18, 0x61,
-        0x86, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
-};
+#define COMMAND_LEN 4
+#define MATRIX_MODE_MONOCHROME 1
+#define MATRIX_MODE_GREYSCALE  2
+#define MATRIX_EXIT 3
 
-void wait_for_connection(void) {
-    struct pollfd fds;
-    fds.fd = 0; /* this is STDIN */
-    fds.events = POLLIN;
-    
-    picture_t *pic = picture_alloc();
-    picture_raw2pic(pic, waiting);
-    matrix_update(pic);
-    
-    for(;;) {
-        int i;
-        static int state = 0;
-        static int ani = 0;
-        
-        int ret = poll(&fds, 1, 0);
-        if(ret == 1)
-            break;
-        
-        picture_scroll_part(pic, SCROLL_LEFT, 28, 6);
-        switch(state) {
-            case 0:
-                picture_setPixel(pic, 39, 33, 1);
-                break;
-            case 1:
-                picture_setPixel(pic, 39, 33, 1);
-                break;
-            case 2:
-            case 5:
-                for(i = 0 ; i < 6 ; i++)
-                        picture_setPixel(pic, 39, 33-i, 1);
-                break;
-            case 3:
-                picture_setPixel(pic, 39, 28, 1);
-                break;
-            case 4:
-                picture_setPixel(pic, 39, 28, 1);
-                break;
-            default:
-                break;
-        }
-        
-        if(++ani == 4) {
-            static int state = 0;
-            ani=0;
-            picture_scroll_part(pic, SCROLL_RIGHT, 35, 6);
-            switch(state) {
-                case 0:
-                    picture_setPixel(pic, 0, 40, 1);
-                    break;
-                case 1:
-                    picture_setPixel(pic, 0, 40, 1);
-                    break;
-                case 2:
-                case 5:
-                    for(i = 0 ; i < 6 ; i++)
-                            picture_setPixel(pic, 0, 40-i, 1);
-                    break;
-                case 3:
-                    picture_setPixel(pic, 0, 35, 1);
-                    break;
-                case 4:
-                    picture_setPixel(pic, 0, 35, 1);
-                    break;
-                default:
-                    break;
-            }
-            if(++state == 6)
-                state = 0;
-        }
-        
-        if(++state == 6)
-            state = 0;
-        
-        usleep(50000);
-        matrix_update(pic);
-    }    
-out:
-    picture_free(pic);
+#define REMOTE_RET_ERROR 0xffffffff
+
+static const char hello_str[] = "Hello, this Kitchen-Matrix "
+    MATRIX_VERSION_MAJOR "." MATRIX_VERSION_MINOR
+    " (sources: " MATRIX_GIT_BRANCH "-" MATRIX_GIT_COMMIT_HASH ")";
+
+int sockfd, n;
+struct sockaddr_in servaddr, cliaddr;
+socklen_t len;
+
+pthread_t greyscale_thread;
+
+int matrix_mode = MATRIX_MODE_MONOCHROME;
+
+int matrix_cmd(uint32_t cmd)
+{
+	int retval = 0;
+
+	uint32_t remote_retval = cmd;
+
+    printf("Received Command 0x%08x\n", cmd);
+	switch (cmd) {
+	case MATRIX_MODE_MONOCHROME:
+		if (matrix_mode == MATRIX_MODE_MONOCHROME) {
+            puts("Already in Monochrome mode!");
+		} else {
+			// Stop thread here
+			pthread_cancel(greyscale_thread);
+			matrix_mode = MATRIX_MODE_MONOCHROME;
+            puts("Switched to Monochrome mode!");
+		}
+		break;
+	case MATRIX_MODE_GREYSCALE:
+		if (matrix_mode == MATRIX_MODE_GREYSCALE) {
+            puts("Already in Greyscale mode!");
+		} else {
+			matrix_mode = MATRIX_MODE_GREYSCALE;
+			// Start Thread here.
+			pthread_create(&greyscale_thread, NULL, matrix_run,
+				       NULL);
+            puts("Switched to Greyscale mode!");
+		}
+		break;
+	case MATRIX_EXIT:
+		// Stop thread here, if greyscale.
+		if (matrix_mode == MATRIX_MODE_GREYSCALE) {
+			pthread_cancel(greyscale_thread);
+		}
+		retval = 1;
+		break;
+	default:
+		remote_retval = REMOTE_RET_ERROR;
+        puts("Unknown command.");
+		break;
+	}
+
+	sendto(sockfd, &remote_retval, sizeof(uint32_t), 0,
+	       (struct sockaddr *)&cliaddr, sizeof(cliaddr));
+
+	return retval;
 }
 
-int main(void) {
-    printf("Hello, this Kitchen-Matrix %s.%s (sources: %s-%s)\n",
-        MATRIX_VERSION_MAJOR,
-	MATRIX_VERSION_MINOR,
-	MATRIX_GIT_BRANCH,
-	MATRIX_GIT_COMMIT_HASH);
+void matrix_main_loop()
+{
+	// Initialize frames
+	frame_t *cur, *next;
+	cur = malloc(sizeof(frame_t));
+	next = malloc(sizeof(frame_t));
 
-    printf("Initializing Hardware....\n");
-    matrix_init();
+	bzero(cur, sizeof(frame_t));
+	bzero(next, sizeof(frame_t));
 
-    printf("Phasers on standby...\n");
-    
-    wait_for_connection();
-    printf("Fire!\n");
-    picture_t *pic = picture_alloc();
+	matrix_setFrame(cur);
 
-    while( read(0, *pic, sizeof(picture_t)) == sizeof(picture_t) ) {
-        matrix_update(pic);
-    }
+	for (;;) {
+		unsigned char cmd;
+		n = recvfrom(sockfd, (void *)next, sizeof(frame_t), 0,
+			     (struct sockaddr *)&cliaddr, &len);
 
-    picture_free(pic);
-    
-    printf("Shutting down...\n");
-    matrix_close();
+		if (n == COMMAND_LEN) {	// We just received a command
+			cmd = *(uint32_t *) next;
+			if (matrix_cmd(cmd))
+				break;
+		} else if (n == sizeof(picture_t)) {
+			if (matrix_mode == MATRIX_MODE_MONOCHROME) {
+				matrix_update((picture_t *) next);
+			} else {
+                puts("Matrix not in Monochrome mode!");
+			}
+		} else if (n == sizeof(frame_t)) {
+			if (matrix_mode == MATRIX_MODE_GREYSCALE) {
+				matrix_setFrame(next);
+                // Swap cur <-> next
+				void *tmp = next;
+				next = cur;
+				cur = tmp;
+			} else {
+                puts("Matrix not in Greyscale mode!");
+			}
+		} else {
+            printf("UDP packet size mismatch: %d\n", n);
+		}
+	}
 
-    return 0;
+	free(cur);
+	free(next);
+}
+
+int main(void)
+{
+	puts(hello_str);
+
+    puts("Initializing Hardware....");
+	matrix_init();
+
+    puts("Clear Screen...");
+	picture_t *start = picture_alloc();
+	matrix_update(start);
+	picture_free(start);
+
+	puts("Initializing Networking...");
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sockfd == -1) {
+        printf("%s\n", strerror(errno));
+		return -1;
+	}
+
+	bzero(&servaddr, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	servaddr.sin_port = htons(1337);
+	bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	len = sizeof(cliaddr);
+
+	puts("Getting ready to fire phasers...");
+	matrix_main_loop();
+
+    puts("Shutting down...");
+	matrix_close();
+
+	return 0;
 }

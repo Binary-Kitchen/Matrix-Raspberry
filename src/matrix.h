@@ -1,8 +1,8 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#define BLANK_PIN       4 // gpio23
-#define PIXEL_CLOCK_PIN 5 // gpio24
+#define BLANK_PIN       4	// gpio23
+#define PIXEL_CLOCK_PIN 5	// gpio24
 
 #define NUM_PANELS_ROWS 5
 #define NUM_PANELS_COLS 5
@@ -29,8 +29,7 @@
 #define BYTES_ROWS ((NUM_ROWS+7)/8)
 #define BYTES_COLS ((NUM_COLS+7)/8)
 
-
-#define NUM_PICTURES_PER_FRAME 2
+#define NUM_PICTURES_PER_FRAME 3
 
 typedef unsigned char picture_t[PICTURE_SIZE];
 typedef picture_t frame_t[NUM_PICTURES_PER_FRAME];
@@ -38,5 +37,10 @@ typedef picture_t frame_t[NUM_PICTURES_PER_FRAME];
 void matrix_init(void);
 void matrix_close(void);
 
-void matrix_update(picture_t *picture);
+void matrix_update(picture_t * picture);
+
+void matrix_setFrame(frame_t * frame);
+
+void *matrix_run(void *);
+
 #endif
