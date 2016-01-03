@@ -1,17 +1,13 @@
-#include <stdint.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <linux/spi/spidev.h>
-#include <unistd.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "SPI.h"
 
+// Exported in SPI.h
 int spi_fd;
-
 struct spi_ioc_transfer spi;
 
 void SPI_close()
@@ -19,7 +15,7 @@ void SPI_close()
 	close(spi_fd);
 }
 
-void SPI_setup(int speed)
+void SPI_setup(const int speed)
 {
 	static const uint8_t spiMode = 0;
 	static const uint8_t spiBPW = 8;
@@ -49,12 +45,4 @@ void SPI_setup(int speed)
 	spi.delay_usecs = 0;
 	spi.speed_hz = speed;
 	spi.bits_per_word = spiBPW;
-}
-
-inline void SPI_write(unsigned char *data, int len)
-{
-	spi.tx_buf = (unsigned long)data;
-	spi.len = len;
-
-	ioctl(spi_fd, SPI_IOC_MESSAGE(1), &spi);
 }
