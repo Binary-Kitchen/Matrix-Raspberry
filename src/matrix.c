@@ -14,7 +14,7 @@
 #define PIXEL_HIGH() digitalWrite(PIXEL_CLOCK_PIN, 1)
 #define PIXEL_LOW()  digitalWrite(PIXEL_CLOCK_PIN, 0)
 
-static frame_t *cur_frame = NULL;
+static frame_t* cur_frame = NULL;
 
 void matrix_update(picture_t * picture)
 {
@@ -63,7 +63,7 @@ void matrix_setFrame(frame_t * frame)
 	cur_frame = frame;
 }
 
-void *matrix_run(void *arg)
+void* matrix_run(void* arg)
 {
 	(void)arg;
 	for (;;) {
