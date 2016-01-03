@@ -16,6 +16,13 @@
 
 static frame_t* cur_frame = NULL;
 
+static const unsigned int timing[NUM_PICTURES_PER_FRAME] =
+{
+	100,
+	500,
+	3000,
+};
+
 void matrix_update(picture_t * picture)
 {
 	int bitno;
@@ -52,11 +59,6 @@ void matrix_close(void)
 {
 	shift_close();
 }
-
-static const unsigned int timing[NUM_PICTURES_PER_FRAME] = { 100,
-	500,
-	3000
-};
 
 void matrix_setFrame(frame_t * frame)
 {
