@@ -3,43 +3,42 @@
 
 #include "graphics.h"
 
-picture_t *picture_alloc()
+picture_t* picture_alloc()
 {
-	picture_t *foo = (picture_t *) malloc(sizeof(picture_t));
-	picture_clear(foo);
-	return foo;
+	picture_t* pic = (picture_t*)malloc(sizeof(picture_t));
+	picture_clear(pic);
+	return pic;
 }
 
-void picture_free(picture_t * picture)
+void picture_free(picture_t* picture)
 {
 	free(picture);
 }
 
-void picture_clear(picture_t * picture)
+void picture_clear(picture_t* picture)
 {
-    bzero(*picture, PICTURE_SIZE);
+	bzero(*picture, PICTURE_SIZE);
 }
 
-void picture_full(picture_t * picture)
+void picture_full(picture_t* picture)
 {
 	memset(*picture, 0xff, PICTURE_SIZE);
 }
 
-void picture_copy(picture_t * dst, picture_t * src)
+void picture_copy(picture_t* dst, picture_t* src)
 {
 	memcpy(dst, src, sizeof(picture_t));
 }
 
-picture_t *picture_dup(picture_t * src)
+picture_t* picture_dup(picture_t* src)
 {
-	picture_t *dup = (picture_t *) malloc(sizeof(picture_t));
+	picture_t* dup = (picture_t*)malloc(sizeof(picture_t));
 	picture_copy(dup, src);
 	return dup;
 }
 
-void
-picture_setPixel(picture_t * picture, unsigned int x, unsigned int y,
-		 unsigned char on)
+void picture_setPixel(picture_t * picture, unsigned int x, unsigned int y,
+		      unsigned char on)
 {
 	unsigned int x_o = x % 8;
 	unsigned int y_o = y % 9;
@@ -57,8 +56,8 @@ picture_setPixel(picture_t * picture, unsigned int x, unsigned int y,
 		*(*picture + array_offset) &= ~(1 << bit_offset);
 }
 
-unsigned int
-picture_getPixel(picture_t * picture, unsigned int x, unsigned int y)
+unsigned int picture_getPixel(picture_t* picture, unsigned int x,
+			      unsigned int y)
 {
 	unsigned int x_o = x % 8;
 	unsigned int y_o = y % 9;
@@ -74,8 +73,8 @@ picture_getPixel(picture_t * picture, unsigned int x, unsigned int y)
 	return *(*picture + array_offset) & (1 << bit_offset);
 }
 
-void
-picture_scroll(picture_t * pic, unsigned direction, const unsigned char *fillup)
+void picture_scroll(picture_t* pic, unsigned direction,
+		    const unsigned char* fillup)
 {
 	int x, y;
 	if (direction == SCROLL_LEFT) {
@@ -151,9 +150,8 @@ picture_scroll(picture_t * pic, unsigned direction, const unsigned char *fillup)
 	}
 }
 
-void
-picture_scroll_part(picture_t * pic, unsigned direction,
-		    unsigned int start, unsigned int length)
+void picture_scroll_part(picture_t * pic, unsigned direction,
+			 unsigned int start, unsigned int length)
 {
 	int x, y;
 	if (direction == SCROLL_LEFT) {
@@ -199,7 +197,7 @@ picture_scroll_part(picture_t * pic, unsigned direction,
 	}
 }
 
-void picture_raw2pic(picture_t * pic, const unsigned char *raw)
+void picture_raw2pic(picture_t* pic, const unsigned char* raw)
 {
 	int i;
 	for (i = 0; i < 225; i++) {

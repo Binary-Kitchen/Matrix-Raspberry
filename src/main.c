@@ -25,54 +25,53 @@ static const char hello_str[] = "Hello, this Kitchen-Matrix "
     MATRIX_VERSION_MAJOR "." MATRIX_VERSION_MINOR
     " (sources: " MATRIX_GIT_BRANCH "-" MATRIX_GIT_COMMIT_HASH ")";
 
-int sockfd, n;
-struct sockaddr_in servaddr, cliaddr;
-socklen_t len;
+static int sockfd;
+static struct sockaddr_in servaddr, cliaddr;
+static socklen_t len;
 
-pthread_t greyscale_thread;
+static pthread_t greyscale_thread;
 
 int matrix_mode = MATRIX_MODE_MONOCHROME;
 
-int matrix_cmd(uint32_t cmd)
+int matrix_cmd(const uint32_t cmd)
 {
 	int retval = 0;
-
 	uint32_t remote_retval = cmd;
-
-    printf("Received Command 0x%08x\n", cmd);
+	
+	printf("Received Command 0x%08x\n", cmd);
 	switch (cmd) {
-	case MATRIX_MODE_MONOCHROME:
-		if (matrix_mode == MATRIX_MODE_MONOCHROME) {
-            puts("Already in Monochrome mode!");
-		} else {
-			// Stop thread here
-			pthread_cancel(greyscale_thread);
-			matrix_mode = MATRIX_MODE_MONOCHROME;
-            puts("Switched to Monochrome mode!");
-		}
-		break;
-	case MATRIX_MODE_GREYSCALE:
-		if (matrix_mode == MATRIX_MODE_GREYSCALE) {
-            puts("Already in Greyscale mode!");
-		} else {
-			matrix_mode = MATRIX_MODE_GREYSCALE;
-			// Start Thread here.
-			pthread_create(&greyscale_thread, NULL, matrix_run,
-				       NULL);
-            puts("Switched to Greyscale mode!");
-		}
-		break;
-	case MATRIX_EXIT:
-		// Stop thread here, if greyscale.
-		if (matrix_mode == MATRIX_MODE_GREYSCALE) {
-			pthread_cancel(greyscale_thread);
-		}
-		retval = 1;
-		break;
-	default:
-		remote_retval = REMOTE_RET_ERROR;
-        puts("Unknown command.");
-		break;
+		case MATRIX_MODE_MONOCHROME:
+			if (matrix_mode == MATRIX_MODE_MONOCHROME) {
+				puts("Already in Monochrome mode!");
+			} else {
+				// Stop thread here
+				pthread_cancel(greyscale_thread);
+				matrix_mode = MATRIX_MODE_MONOCHROME;
+				puts("Switched to Monochrome mode!");
+			}
+			break;
+		case MATRIX_MODE_GREYSCALE:
+			if (matrix_mode == MATRIX_MODE_GREYSCALE) {
+	            puts("Already in Greyscale mode!");
+			} else {
+				matrix_mode = MATRIX_MODE_GREYSCALE;
+				// Start Thread here.
+				pthread_create(&greyscale_thread, NULL, matrix_run,
+					       NULL);
+	            puts("Switched to Greyscale mode!");
+			}
+			break;
+		case MATRIX_EXIT:
+			// Stop thread here, if greyscale.
+			if (matrix_mode == MATRIX_MODE_GREYSCALE) {
+				pthread_cancel(greyscale_thread);
+			}
+			retval = 1;
+			break;
+		default:
+			remote_retval = REMOTE_RET_ERROR;
+	        puts("Unknown command.");
+			break;
 	}
 
 	sendto(sockfd, &remote_retval, sizeof(uint32_t), 0,
@@ -95,8 +94,9 @@ void matrix_main_loop()
 
 	for (;;) {
 		unsigned char cmd;
+		ssize_t n;
 		n = recvfrom(sockfd, (void *)next, sizeof(frame_t), 0,
-			     (struct sockaddr *)&cliaddr, &len);
+					 (struct sockaddr *)&cliaddr, &len);
 
 		if (n == COMMAND_LEN) {	// We just received a command
 			cmd = *(uint32_t *) next;
@@ -104,14 +104,14 @@ void matrix_main_loop()
 				break;
 		} else if (n == sizeof(picture_t)) {
 			if (matrix_mode == MATRIX_MODE_MONOCHROME) {
-				matrix_update((picture_t *) next);
+				matrix_update((picture_t*)next);
 			} else {
                 puts("Matrix not in Monochrome mode!");
 			}
 		} else if (n == sizeof(frame_t)) {
 			if (matrix_mode == MATRIX_MODE_GREYSCALE) {
 				matrix_setFrame(next);
-                // Swap cur <-> next
+				// Swap cur <-> next
 				void *tmp = next;
 				next = cur;
 				cur = tmp;

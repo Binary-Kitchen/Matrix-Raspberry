@@ -41,6 +41,6 @@ void matrix_update(picture_t* picture);
 
 void matrix_setFrame(frame_t* frame);
 
-void *matrix_run(void *);
+void* matrix_run(void*);
 
 #endif /* MATRIX_H */

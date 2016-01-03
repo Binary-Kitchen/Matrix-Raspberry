@@ -1,8 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-
 #include <unistd.h>
-
 #include <wiringPi.h>
 
 #include "matrix.h"
@@ -28,12 +26,12 @@ void matrix_update(picture_t * picture)
 	int bitno;
 	unsigned int i;
 
-	BLANK_LOW();		// Matrix aus
-	for (bitno = 0; bitno < BITS_PER_PANEL; bitno++) {	// Iteriere über die Anzahl der Bits Pro Panel
-		shift_out((*picture) + NUM_SHIFTERS * bitno, NUM_SHIFTERS);	// Gib das jeweilige Bit für alle Panels aus
+	BLANK_LOW(); // Turn off matrix
+	for (bitno = 0; bitno < BITS_PER_PANEL; bitno++) { // Iterate over all bits per panel
+		shift_out((*picture) + NUM_SHIFTERS * bitno, NUM_SHIFTERS); // Output corresponding bits
 
-		PIXEL_LOW();	// Toggel an der Matrix und übernimm
-		for (i = 0; i < NOPS_BETWEEN_PIXELCLOCK; i++)
+		PIXEL_LOW(); // Toggel for accepting bits
+		for (i = 0; i < NOPS_BETWEEN_PIXELCLOCK; i++) /* !FIXIT This is ugly! */
 			asm volatile
 			 ("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop");
 
@@ -42,7 +40,7 @@ void matrix_update(picture_t * picture)
 			asm volatile
 			 ("nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop;nop");
 	}
-	BLANK_HIGH();		// Matrix 
+	BLANK_HIGH(); // Turn on matrix
 }
 
 void matrix_init(void)
@@ -52,7 +50,7 @@ void matrix_init(void)
 	pinMode(BLANK_PIN, OUTPUT);
 	pinMode(PIXEL_CLOCK_PIN, OUTPUT);
 
-	BLANK_HIGH();		// Matrix an
+	BLANK_HIGH(); // Turn on matrix
 }
 
 void matrix_close(void)
@@ -60,7 +58,7 @@ void matrix_close(void)
 	shift_close();
 }
 
-void matrix_setFrame(frame_t * frame)
+void matrix_setFrame(frame_t* frame)
 {
 	cur_frame = frame;
 }
@@ -70,7 +68,7 @@ void* matrix_run(void* arg)
 	(void)arg;
 	for (;;) {
 		int i;
-        for (i = 0; i < NUM_PICTURES_PER_FRAME; i++) {
+		for (i = 0; i < NUM_PICTURES_PER_FRAME; i++) {
 			matrix_update((*cur_frame) + i);
 			usleep(timing[i]);
 		}
