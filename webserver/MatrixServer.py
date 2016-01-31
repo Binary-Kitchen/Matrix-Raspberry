@@ -22,7 +22,8 @@ ANIMATION_DICT = {
     5: 'matrix-cairoexample',
     6: 'matrix-circle',
     7: 'matrix-fire',
-    8: 'matrix-zwickl'
+    8: 'matrix-zwickl',
+    9: 'matrix-rain'
 }
 
 cur_anim_pid = -1
