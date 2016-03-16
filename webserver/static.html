@@ -1,25 +1,85 @@
 <html>
 <head>
 	<title>Super Matrix Software Steuer Teil</title>
+	<meta charset="utf-8">
+	<style>
+		body {
+			background: black;
+			color: #0c0;
+			font-family: Monospace;
+		}
+
+		label {
+			padding: 5px 0;
+			display: block;
+			cursor: pointer;
+			font-size: 1.6em;
+		}
+
+		label:before {
+			content: '> ';
+		}
+
+		label.selected {
+			font-weight: bold;
+		}
+
+		.logo {
+			float: right;
+			max-width: 30vw;
+			margin: 10px;
+		}
+
+		input{
+			display: none;
+		}
+	</style>
 </head>
-<body bgcolor="#000000" text="#00cc00">
+<body>
 	<h1>Super Matrix Software Steuer Teil</h1>
-	<h2>Bitte Animation aus&auml;hlen</h2>
-
-	<form action="">
-		<input type="radio" name="foo" value="1">Digitaluhr</input><br/>
-		<input type="radio" name="foo" value="2">Analoguhr</input><br/>
-		<input type="radio" name="foo" value="3">Schachbrett</input><br/>
-		<input type="radio" name="foo" value="4">Fullblink</input><br/>
-		<input type="radio" name="foo" value="5">Cairo W&uuml;rfel</input><br/>
-		<input type="radio" name="foo" value="6">Kreise</input><br/>
-		<input type="radio" name="foo" value="7">Feuer</input><br/>
-		<input type="radio" name="foo" value="8">Zwickl Animation</input><br/>
-		<input type="radio" name="foo" value="9">Regen Simulation</input><br/>
+	<h2>Bitte Animation auswählen</h2>
+	<svg xmlns="http://www.w3.org/2000/svg" class="logo" viewBox="0 0 561 499">
+		<path fill="#0c0"
+			  d="M351.6 307.8l-11 4.8c-2 1-3 3.5-2.2 5.8l3 6.7-11.8 17-164 77.4c-4.2 2-6 6.7-4.3 11l3.5 7.8-14 6.7c-1.6-6.6-5.8-11.8-11.3-14.7-6.5-3.3-14-3.6-22-1-2 .5-4 1.3-6.2 2.4-2 1-4 2.3-6 4-3.5 3-6.4 7.8-5.7 13.4.6 5 2.8 9.6 7 12.5 4.2 3 10.2 3.8 17.3 2 6-1.6 11.5-3.6 17.2-6-.4.6-.5 1.2-1 1.7-2.5 3.3-6.4 6.4-10.6 8.4C112.4 476 94.3 485 76.2 492l2.8 7c18.6-7 37-16 54-24.5 5-2.4 10-6 13.6-10.7 2.3-3 4-6.6 4.5-10.5 5.8-2.4 11.4-5 17-7.7l2 5.3c2 4 6.7 6 11 4.2 55.2-23.3 114.2-48 168-68l20.4 3 3 6.6c1 2.2 3.5 3.2 5.7 2.2l11-4.7c2-1 3.3-3.5 2.3-5.7L380.5 364l137.7-61c2.7-1 4-4 2.8-6.8l-2.3-5.2 34.3-15c2.4-1 8-5.7 7-8-1-2.4-8.3-1.4-10.6-.3l-34.3 15-2-5.2c-1.2-2.7-4.3-4-7-2.8l-137.6 60-10.8-24.6c-1-2-3.6-3-5.8-2zM117.3 437l2.5-1c6.4-2 11.5-1.7 16.3 1 4 2 7 5.5 8 10.6-7 3-14.5 6-22 8-5.7 1.4-9 .7-11-.7-2-1.8-3.2-4-3.6-7.5-.4-2.6.7-4.6 3-6.7l4.5-3 2.4-1zM185.7.4c-49.2 0-89 27.4-89 61.3 0 28.5 28.3 52.6 66.8 59 8 1.2 12.6 1 17.3 1.4 1 0 2 1.4 1.8 2 0 1-1 2-2 2-7-.2-8-.2-13.3-1v18l-9 .4c-3.5 0-6.6 2.8-6.4 6.3l7.2 131c.2 3.4 2.8 6 6.3 6.2 61.6 4.3 124 4.6 187.2 0 3.4-.5 6-3 6.2-6.5l7.2-131c.2-3.5-2.8-6.3-6.3-6.3h-7v-23l-8.5.2c-1 0-2-1-2-1.8 0-1 1-2 2-2 4 .2 6.6.2 8.7-.3 28-7 48-24.6 48-45.2 0-26.5-33.4-48-74.4-48-21.8 0-41 6-54.7 15.4 2.7 3.6 5 6.3 7.3 8 2.5 2 5.3 3 9.7 3 1 0 1.8 1 1.8 2s-1 2-2 2c-4.8-.3-8.7-1.4-11.6-4-3.6-3-5.4-4-8.6-9.5-13-22.8-45.2-39-83-39zm34 173.4H233c3 0 5.4 2.6 5.3 5.6l-.7 81.3c0 3-2.5 5.4-5.5 5.4h-13c-3 0-5.2-2.3-5.2-5.3l.8-81.4c0-3 2.4-5.3 5.4-5.2zm69.4.7c17 0 30 20.5 30 45.5-.2 25-14 45.2-30.5 45-16.7 0-30-20.5-29.8-45.5.3-25 14-45.2 30.6-45zM32 262.7c-4.2-1.7-16-1-19 6.2L.7 298.4c-3 7.5 5 16 9.2 18l129 52.7c1.5-1.4 3.4-2.3 5.5-2.4 4.5 0 8.3 3.5 8.4 8l1.5.6c4.2 1.8 9-.3 10.7-4.5l5.2-12.7L419 460c1 4 11.4 11 19 14.5 4.7 2.2 9.7 4 14.5 6l10-24.6c-4.8-2-9.5-4.3-14.5-6-6.3-2-18.5-5-23.7-3L175.8 345.3l5.2-12.7c1.6-4.2-.4-9-4.6-10.8l-1.6-.8c-1.4 1.7-3.6 2.8-6 2.8-4.4 0-8.3-3.7-8.2-8.6C116 297 72 279 31.8 262.7zm1 15.3l123 50.3c1.3.5 2 2.2 1.4 3.3-.4 1-2 2-3.3 1.4L31.3 283c-5.2-2-9.4-1-11.8 2-1 1.2-2.8 1.5-3.8.7s-1-2.8 0-4c3-3.3 6.7-4.7 10-4.7 2.5 0 5 .2 7 1zm-10 23.5c41.8 17 81.3 33.3 123 50.4 1.3.2 2 2 1.5 3-.4 1-2 2-3.4 1.4l-123-50c-1.2-.7-1.7-2.4-1.3-3.5.4-1.3 1.8-2 3.3-1.6z"></path>
+	</svg>
+	<form action="" name="matrix">
+		<label><input type="radio" name="foo" value="1" onChange="autoSubmit();"/>Digitaluhr</label>
+		<label><input type="radio" name="foo" value="2" onChange="autoSubmit();">Analoguhr</label>
+		<label><input type="radio" name="foo" value="3" onChange="autoSubmit();">Schachbrett</label>
+		<label><input type="radio" name="foo" value="4" onChange="autoSubmit();">Fullblink</label>
+		<label><input type="radio" name="foo" value="5" onChange="autoSubmit();">Cairo Würfel</label>
+		<label><input type="radio" name="foo" value="6" onChange="autoSubmit();">Kreise</label>
+		<label><input type="radio" name="foo" value="7" onChange="autoSubmit();">Feuer</label>
+		<label><input type="radio" name="foo" value="8" onChange="autoSubmit();">Zwickl Animation</label>
+		<label><input type="radio" name="foo" value="9" onChange="autoSubmit();">Regen Simulation</label>
 		<br/>
-		<input type="radio" name="foo" value="100">Matrix Runterfahren</input><br/>
-		<input type="radio" name="foo" value="101">Matrix Neustart</input><br/>
-		<input type="radio" name="foo" value="102">Animationen abschalten (f&uuml; UDP Input)</input><br/>
-
-		<input type="submit" name="" value="Ab die Post"/>
+		<h2>Aktion auswählen</h2>
+		<label><input type="radio" name="foo" value="100" onChange="autoSubmit();">Matrix Runterfahren</label>
+		<label><input type="radio" name="foo" value="101" onChange="autoSubmit();">Matrix Neustart</label>
+		<label><input type="radio" name="foo" value="102" onChange="autoSubmit();">Animationen abschalten (für UDP
+			Input)</label>
 	</form>
+	<script>
+		function autoSubmit() {
+			document.matrix.submit();
+		}
+
+		function getParameterByName(name, url) {
+			if (!url) url = window.location.href;
+			url = url.toLowerCase();
+			name = name.replace(/[\[\]]/g, "\\$&").toLowerCase();
+			var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+					results = regex.exec(url);
+			if (!results) return null;
+			if (!results[2]) return '';
+			return decodeURIComponent(results[2].replace(/\+/g, " "));
+		}
+
+		/* Highlight current selected animation */
+		var selected = getParameterByName('foo');
+		if (selected !== null) {
+			document.matrix.foo.value = selected;
+			checked = document.querySelector('input[name="foo"]:checked');
+			checked.parentNode.classList.add('selected');
+		}
+	</script>
