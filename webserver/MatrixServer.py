@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import codecs
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs, urlparse
 from os import kill, system
@@ -76,12 +77,12 @@ class MyServer(BaseHTTPRequestHandler):
         self.wfile.write(static_footer)
 
 
-myServer = HTTPServer((HOSTNAME, PORT), MyServer)
-
-with open(STATIC_CONTENT, 'r') as f:
+with codecs.open(STATIC_CONTENT, 'r', 'utf-8') as f:
     static_content=bytes(f.read(), ENCODING)
-with open(STATIC_FOOTER, 'r') as f:
+with codecs.open(STATIC_FOOTER, 'r', 'utf-8') as f:
     static_footer=bytes(f.read(), ENCODING)
+
+myServer = HTTPServer((HOSTNAME, PORT), MyServer)
 
 animation_handler(1)
 print('phasers ready to fire')
