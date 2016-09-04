@@ -1,0 +1,11 @@
+[Unit]
+Description=Matrix Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/matrix-webd
+Nice=10
+
+[Install]
+WantedBy=multi-user.target
