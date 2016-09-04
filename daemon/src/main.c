@@ -131,10 +131,10 @@ int main(void)
 {
 	puts(hello_str);
 
-    puts("Initializing Hardware....");
+	puts("Initializing Hardware....");
 	matrix_init();
 
-    puts("Clear Screen...");
+	puts("Clear Screen...");
 	picture_t *start = picture_alloc();
 	matrix_update(start);
 	picture_free(start);
@@ -156,7 +156,7 @@ int main(void)
 	puts("Getting ready to fire phasers...");
 	matrix_main_loop();
 
-    puts("Shutting down...");
+	puts("Shutting down...");
 	matrix_close();
 
 	return 0;
