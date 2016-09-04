@@ -21,7 +21,7 @@ void SPI_setup(const int speed)
 	static const uint8_t spiBPW = 8;
 
 	if ((spi_fd = open("/dev/spidev0.0", O_RDWR)) < 0) {
-		printf("Unable to open SPI device.");
+		printf("Unable to open SPI device.\n");
 		exit(-1);
 	}
 
