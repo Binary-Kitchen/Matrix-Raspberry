@@ -12,7 +12,7 @@
 #include "graphics.h"
 #include "tools.h"
 
-#include <matrix-config.h>
+#include <config.h>
 
 #define COMMAND_LEN 4
 #define MATRIX_MODE_MONOCHROME 1
@@ -21,9 +21,9 @@
 
 #define REMOTE_RET_ERROR 0xffffffff
 
-static const char hello_str[] = "Hello, this Kitchen-Matrix "
-    MATRIX_VERSION_MAJOR "." MATRIX_VERSION_MINOR
-    " (sources: " MATRIX_GIT_BRANCH "-" MATRIX_GIT_COMMIT_HASH ")";
+static const char hello_str[] = "Hello, this matrixd "
+    MATRIXD_VERSION_MAJOR "." MATRIXD_VERSION_MINOR
+    " (sources: " MATRIXD_GIT_BRANCH "-" MATRIXD_GIT_COMMIT_HASH ")";
 
 static int sockfd;
 static struct sockaddr_in servaddr, cliaddr;

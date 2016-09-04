@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Matrix-Raspberry)
+project(matrixd)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 SET(CMAKE_SYSTEM_NAME Linux)
 
-set(MATRIX_VERSION_MAJOR "\"0\"")
-set(MATRIX_VERSION_MINOR "\"3\"")
+set(MATRIXD_VERSION_MAJOR "\"0\"")
+set(MATRIXD_VERSION_MINOR "\"3\"")
 
 # Get the current working branch
 execute_process(
@@ -35,11 +35,11 @@ include_directories("${PROJECT_SOURCE_DIR}")
 find_package (Threads)
 
 configure_file(
-  "${PROJECT_SOURCE_DIR}/matrix-config.h.in"
-  "${PROJECT_BINARY_DIR}/matrix-config.h"
+  "${PROJECT_SOURCE_DIR}/config.h.in"
+  "${PROJECT_BINARY_DIR}/config.h"
 )
 
-set(MATRIX_SRCS src/74hc595.c src/74hc595.h
+set(MATRIXD_SRCS src/74hc595.c src/74hc595.h
                 src/SPI.c src/SPI.h
                 src/graphics.c src/graphics.h
                 src/main.c src/matrix.c
@@ -47,5 +47,5 @@ set(MATRIX_SRCS src/74hc595.c src/74hc595.h
                 src/tools.h
                 src/main.c)
 
-add_executable(Matrix-Raspberry ${MATRIX_SRCS})
-target_link_libraries(Matrix-Raspberry wiringPi ${CMAKE_THREAD_LIBS_INIT})
+add_executable(matrixd ${MATRIXD_SRCS})
+target_link_libraries(matrixd wiringPi ${CMAKE_THREAD_LIBS_INIT})
