@@ -9,12 +9,12 @@ import subprocess
 
 PORT = 80
 HOSTNAME = ''
-STATIC_CONTENT = 'static.html'
-STATIC_FOOTER = 'staticFooter.html'
+STATIC_DIR = '/usr/local/share/matrix-webd/'
+STATIC_CONTENT = STATIC_DIR + 'static.html'
+STATIC_FOOTER = STATIC_DIR + 'staticFooter.html'
 ENCODING = 'utf-8'
 
 # no root no fun.
-ANIMATION_BINARY_PATH = '/root/build/apps/'
 ANIMATION_DICT = {
     1: 'matrix-clock',
     2: 'matrix-analogclock',
@@ -52,7 +52,7 @@ def animation_handler(no):
     if cur_anim_pid != -1:
         kill(cur_anim_pid, signal.SIGKILL)
     
-    proc = subprocess.Popen([ANIMATION_BINARY_PATH + ANIMATION_DICT.get(no), '-s', 'localhost'])
+    proc = subprocess.Popen([ANIMATION_DICT.get(no), '-s', 'localhost'])
     cur_anim_pid = proc.pid
     return 'Aye, aye, captain!'
         

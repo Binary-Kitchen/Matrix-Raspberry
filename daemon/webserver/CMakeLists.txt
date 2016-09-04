@@ -1,0 +1,5 @@
+install(FILES matrix-webd
+	DESTINATION sbin/
+	PERMISSIONS WORLD_EXECUTE WORLD_READ OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE)
+install(FILES static.html staticFooter.html
+	DESTINATION share/matrix-webd/)
