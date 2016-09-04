@@ -21,9 +21,9 @@
 
 #define REMOTE_RET_ERROR 0xffffffff
 
-static const char hello_str[] = "Hello, this matrixd "
-    MATRIXD_VERSION_MAJOR "." MATRIXD_VERSION_MINOR
-    " (sources: " MATRIXD_GIT_BRANCH "-" MATRIXD_GIT_COMMIT_HASH ")";
+static const char hello_str[] = "Hello, this Kitchen-Matrix "
+	MATRIXD_VERSION_MAJOR "." MATRIXD_VERSION_MINOR
+	" (sources: " MATRIXD_GIT_BRANCH "-" MATRIXD_GIT_COMMIT_HASH ")";
 
 static int sockfd;
 static struct sockaddr_in servaddr, cliaddr;
@@ -129,21 +129,22 @@ void matrix_main_loop()
 
 int main(void)
 {
+	picture_t *start;
 	puts(hello_str);
 
 	puts("Initializing Hardware....");
 	matrix_init();
 
 	puts("Clear Screen...");
-	picture_t *start = picture_alloc();
+	start = picture_alloc();
 	matrix_update(start);
 	picture_free(start);
 
 	puts("Initializing Networking...");
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sockfd == -1) {
-        printf("%s\n", strerror(errno));
-		return -1;
+		perror("socket");
+		exit(-1);
 	}
 
 	bzero(&servaddr, sizeof(servaddr));
