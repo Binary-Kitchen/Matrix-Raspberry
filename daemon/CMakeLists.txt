@@ -49,3 +49,5 @@ set(MATRIXD_SRCS src/74hc595.c src/74hc595.h
 
 add_executable(matrixd ${MATRIXD_SRCS})
 target_link_libraries(matrixd wiringPi ${CMAKE_THREAD_LIBS_INIT})
+
+install(TARGETS matrixd DESTINATION sbin/)
