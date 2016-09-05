@@ -1,46 +1,14 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#define BLANK_PIN       4 // gpio23
-#define PIXEL_CLOCK_PIN 5 // gpio24
-
-#define NUM_PANELS_ROWS 5
-#define NUM_PANELS_COLS 5
-
-#define SPI_SPEED 50000000
-//#define SPI_SPEED 4000
-//Absolutes Minimum!
-#define NOPS_BETWEEN_PIXELCLOCK 100
-
-/* Internal Definitions */
-#define BYTES_PER_PANEL 10
-#define BITS_PER_PANEL (BYTES_PER_PANEL*8)
-#define NUM_PANELS (NUM_PANELS_ROWS*NUM_PANELS_COLS)
-
-#define NUM_SHIFTERS ((NUM_PANELS+7)/8)
-
-#define NUM_ROWS (NUM_PANELS_ROWS*9)
-#define NUM_COLS (NUM_PANELS_COLS*8)
-
-#define PANEL_NO(x,y) ( (x/8) + NUM_PANELS_ROWS*(y/9) )
-
-#define PICTURE_SIZE (NUM_SHIFTERS * BITS_PER_PANEL)
-
-#define BYTES_ROWS ((NUM_ROWS+7)/8)
-#define BYTES_COLS ((NUM_COLS+7)/8)
-
-#define MATRIX_PICTURES_PER_FRAME 3
-
-typedef unsigned char picture_t[PICTURE_SIZE];
-typedef picture_t frame_t[MATRIX_PICTURES_PER_FRAME];
+#include "matrix_ll.h"
 
 void matrix_init(void);
 void matrix_close(void);
 
-void matrix_update(picture_t* picture);
+void matrix_update(ll_picture_t *picture);
+void matrix_setFrame(ll_frame_t *frame);
 
-void matrix_setFrame(frame_t* frame);
-
-void* matrix_run(void*);
+void *matrix_run(void*);
 
 #endif /* MATRIX_H */

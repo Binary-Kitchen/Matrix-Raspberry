@@ -6,12 +6,20 @@
 #include "matrix.h"
 #include "74hc595.h"
 
+#define BLANK_PIN       4 // gpio23
+#define PIXEL_CLOCK_PIN 5 // gpio24
+
 #define BLANK_HIGH() digitalWrite(BLANK_PIN, 1)
 #define BLANK_LOW()  digitalWrite(BLANK_PIN, 0)
 #define PIXEL_HIGH() digitalWrite(PIXEL_CLOCK_PIN, 1)
 #define PIXEL_LOW()  digitalWrite(PIXEL_CLOCK_PIN, 0)
 
-static frame_t* cur_frame = NULL;
+#define SPI_SPEED 50000000
+//#define SPI_SPEED 4000
+//Absolutes Minimum!
+#define NOPS_BETWEEN_PIXELCLOCK 100
+
+static ll_frame_t *cur_frame = NULL;
 
 static const unsigned int timing[MATRIX_PICTURES_PER_FRAME] =
 {
@@ -20,7 +28,7 @@ static const unsigned int timing[MATRIX_PICTURES_PER_FRAME] =
 	3000,
 };
 
-void matrix_update(picture_t * picture)
+void matrix_update(ll_picture_t *picture)
 {
 	int bitno;
 	unsigned int i;
@@ -57,7 +65,7 @@ void matrix_close(void)
 	shift_close();
 }
 
-void matrix_setFrame(frame_t* frame)
+void matrix_setFrame(ll_frame_t *frame)
 {
 	cur_frame = frame;
 }

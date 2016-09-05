@@ -79,28 +79,28 @@ void matrix_main_loop()
 	ssize_t n;
 
 	// Initialize frames
-	frame_t *cur, *next;
-	cur = malloc(sizeof(frame_t));
-	next = malloc(sizeof(frame_t));
+	ll_frame_t *cur, *next;
+	cur = malloc(sizeof(ll_frame_t));
+	next = malloc(sizeof(ll_frame_t));
 
-	bzero(cur, sizeof(frame_t));
-	bzero(next, sizeof(frame_t));
+	bzero(cur, sizeof(ll_frame_t));
+	bzero(next, sizeof(ll_frame_t));
 
 	matrix_setFrame(cur);
 
 	for (;;) {
-		n = recvfrom(sockfd, (void*)next, sizeof(frame_t), 0,
+		n = recvfrom(sockfd, (void*)next, sizeof(ll_frame_t), 0,
 			     (struct sockaddr *)&cliaddr, &len);
 
 		if (n == sizeof(enum matrix_cmd)) {
 			cmd = *(enum matrix_cmd*)next;
 			matrix_cmd(cmd);
-		} else if (n == sizeof(picture_t)) {
+		} else if (n == sizeof(ll_picture_t)) {
 			if (mode == MATRIX_MODE_MONOCHROME)
-				matrix_update((picture_t*)next);
+				matrix_update((ll_picture_t*)next);
 			else
 				puts("Matrix not in Monochrome mode!");
-		} else if (n == sizeof(frame_t)) {
+		} else if (n == sizeof(ll_frame_t)) {
 			if (mode == MATRIX_MODE_GREYSCALE) {
 				matrix_setFrame(next);
 				// Swap cur <-> next
@@ -125,7 +125,7 @@ int main(void)
 	matrix_init();
 
 	puts("Clear Screen...");
-	picture_t picture;
+	ll_picture_t picture;
 	memset(&picture, 0, sizeof(picture));
 	matrix_update(&picture);
 
