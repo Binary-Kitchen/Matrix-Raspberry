@@ -40,12 +40,9 @@ configure_file(
 )
 
 set(MATRIXD_SRCS src/74hc595.c src/74hc595.h
-                src/SPI.c src/SPI.h
-                src/graphics.c src/graphics.h
-                src/main.c src/matrix.c
-                src/matrix.h src/tools.c
-                src/tools.h
-                src/main.c)
+	src/SPI.c src/SPI.h
+	src/matrix.c src/matrix.h
+	src/main.c)
 
 add_executable(matrixd ${MATRIXD_SRCS})
 target_link_libraries(matrixd wiringPi ${CMAKE_THREAD_LIBS_INIT})

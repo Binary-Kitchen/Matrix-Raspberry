@@ -7,12 +7,10 @@
 #include <netinet/in.h>
 #include <errno.h>
 
+#include <config.h>
+
 #include "74hc595.h"
 #include "matrix.h"
-#include "graphics.h"
-#include "tools.h"
-
-#include <config.h>
 
 #define REMOTE_RET_ERROR 0xff
 
@@ -121,16 +119,15 @@ void matrix_main_loop()
 
 int main(void)
 {
-	picture_t *start;
 	puts(hello_str);
 
 	puts("Initializing Hardware....");
 	matrix_init();
 
 	puts("Clear Screen...");
-	start = picture_alloc();
-	matrix_update(start);
-	picture_free(start);
+	picture_t picture;
+	memset(&picture, 0, sizeof(picture));
+	matrix_update(&picture);
 
 	puts("Initializing Networking...");
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);

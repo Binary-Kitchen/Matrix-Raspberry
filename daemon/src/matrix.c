@@ -5,7 +5,6 @@
 
 #include "matrix.h"
 #include "74hc595.h"
-#include "tools.h"
 
 #define BLANK_HIGH() digitalWrite(BLANK_PIN, 1)
 #define BLANK_LOW()  digitalWrite(BLANK_PIN, 0)
@@ -14,7 +13,7 @@
 
 static frame_t* cur_frame = NULL;
 
-static const unsigned int timing[NUM_PICTURES_PER_FRAME] =
+static const unsigned int timing[MATRIX_PICTURES_PER_FRAME] =
 {
 	100,
 	500,
@@ -68,7 +67,7 @@ void* matrix_run(void* arg)
 	(void)arg;
 	for (;;) {
 		int i;
-		for (i = 0; i < NUM_PICTURES_PER_FRAME; i++) {
+		for (i = 0; i < MATRIX_PICTURES_PER_FRAME; i++) {
 			matrix_update((*cur_frame) + i);
 			usleep(timing[i]);
 		}
