@@ -14,9 +14,8 @@
 #define PIXEL_HIGH() digitalWrite(PIXEL_CLOCK_PIN, 1)
 #define PIXEL_LOW()  digitalWrite(PIXEL_CLOCK_PIN, 0)
 
-#define SPI_SPEED 50000000
-//#define SPI_SPEED 4000
-//Absolutes Minimum!
+/* absolute maximum */
+#define SPI_SPEED 40000000
 #define NOPS_BETWEEN_PIXELCLOCK 100
 
 static ll_frame_t *cur_frame = NULL;
