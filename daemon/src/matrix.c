@@ -69,9 +69,10 @@ void matrix_setFrame(ll_frame_t *frame)
 	cur_frame = frame;
 }
 
-void* matrix_run(void* arg)
+void *matrix_run(void *arg)
 {
 	(void)arg;
+
 	for (;;) {
 		int i;
 		for (i = 0; i < MATRIX_PICTURES_PER_FRAME; i++) {
@@ -79,5 +80,6 @@ void* matrix_run(void* arg)
 			usleep(timing[i]);
 		}
 	}
-	return (void *)42;
+
+	return NULL;
 }
