@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+"""
+matrix-mqtt -- Daemon to control the LED Matrix via MqTT
+
+Copyright (c) Binary Kitchen e.V., 2018
+
+Author:
+  Thomas Basler <noby@binary-kitchen.de>
+  Ralf Ramsauer <ralf@binary-kitchen.de>
+
+This work is licensed under the terms of the GNU GPL, version 2.  See
+the LICENSE file in the top-level directory.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
+"""
+
+import paho.mqtt.client as mqtt
+from os import kill, system
+import signal
+import subprocess
+
+MQTT_HOSTNAME = '172.23.4.6'
+MQTT_USERNAME = ''
+MQTT_PASSWORD = ''
+TOPIC_BASE = 'Kitchen/Matrix/'
+TOPIC_ANIM = TOPIC_BASE + 'Animation'
+TOPIC_LWT = TOPIC_BASE + 'lwt'
+TOPIC_REBOOT = TOPIC_BASE + 'reboot'
+TOPIC_SHUTDOWN = TOPIC_BASE + 'shutdown'
+
+ANIMATION_DICT = {
+    1: 'matrix-clock',
+    2: 'matrix-analogclock',
+    3: 'matrix-chess',
+    4: 'matrix-fullblink',
+    5: 'matrix-cairoexample',
+    6: 'matrix-circle',
+    7: 'matrix-fire',
+    8: 'matrix-zwickl',
+    9: 'matrix-rain'
+}
+
+cur_anim_pid = -1
+
+def on_message_animation(client, userdata, message):
+    global cur_anim_pid
+
+    no = int(message.payload.decode("utf-8"))
+
+    if no >= 100:
+        if no == 102:
+            if cur_anim_pid != -1:
+                kill(cur_anim_pid, signal.SIGKILL)
+            cur_anim_pid = -1
+        else:
+            print('Go home kiddy!')
+
+        print('Aye, aye!')
+
+    if not no in ANIMATION_DICT:
+        print('Go home kiddy!')
+    
+    if cur_anim_pid != -1:
+        kill(cur_anim_pid, signal.SIGKILL)
+    
+    proc = subprocess.Popen([ANIMATION_DICT.get(no), '-s', 'localhost'])
+    cur_anim_pid = proc.pid
+    print('Aye, aye, captain!')
+
+def on_message_reboot(client, userdata, message):
+    if not message.retain:
+        system("systemctl reboot")
+
+def on_message_shutdown(client, userdata, message):
+    if not message.retain:
+        system("systemctl poweroff")
+
+def on_connect(client, userdata, flags, rc):
+    print("Connection returned result: " + mqtt.connack_string(rc))
+    client.subscribe(TOPIC_ANIM)
+    client.subscribe(TOPIC_REBOOT)
+    client.subscribe(TOPIC_SHUTDOWN)
+    client.publish(TOPIC_LWT, 'online', 0, True)
+
+mqttc = mqtt.Client()
+mqttc.on_connect = on_connect
+mqttc.message_callback_add(TOPIC_ANIM, on_message_animation)
+mqttc.message_callback_add(TOPIC_REBOOT, on_message_reboot)
+mqttc.message_callback_add(TOPIC_SHUTDOWN, on_message_shutdown)
+mqttc.will_set(TOPIC_LWT, 'offline', 0, True)
+
+if MQTT_USERNAME != "":
+    mqttc.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+
+mqttc.connect_async(MQTT_HOSTNAME)
+
+# For some reasons the loop_forever method throws an exception
+# Let's just continue reconnecting
+while True:
+    try:
+        mqttc.loop_forever()
+    except KeyboardInterrupt:
+        break
+    except:
+        pass
+
+mqttc.loop_stop()
