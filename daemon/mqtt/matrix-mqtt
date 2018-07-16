@@ -29,8 +29,6 @@ MQTT_PASSWORD = ''
 TOPIC_BASE = 'Kitchen/Matrix/'
 TOPIC_ANIM = TOPIC_BASE + 'Animation'
 TOPIC_LWT = TOPIC_BASE + 'lwt'
-TOPIC_REBOOT = TOPIC_BASE + 'reboot'
-TOPIC_SHUTDOWN = TOPIC_BASE + 'shutdown'
 
 ANIMATION_DICT = {
     1: 'matrix-clock',
@@ -51,18 +49,15 @@ def on_message_animation(client, userdata, message):
 
     no = int(message.payload.decode("utf-8"))
 
-    if no >= 100:
-        if no == 102:
-            if cur_anim_pid != -1:
-                kill(cur_anim_pid, signal.SIGKILL)
-            cur_anim_pid = -1
-        else:
-            print('Go home kiddy!')
-
+    if no == 0:
+        if cur_anim_pid != -1:
+            kill(cur_anim_pid, signal.SIGKILL)
+        cur_anim_pid = -1
         print('Aye, aye!')
 
-    if not no in ANIMATION_DICT:
+    if no not in ANIMATION_DICT:
         print('Go home kiddy!')
+        return
     
     if cur_anim_pid != -1:
         kill(cur_anim_pid, signal.SIGKILL)
@@ -71,26 +66,14 @@ def on_message_animation(client, userdata, message):
     cur_anim_pid = proc.pid
     print('Aye, aye, captain!')
 
-def on_message_reboot(client, userdata, message):
-    if not message.retain:
-        system("systemctl reboot")
-
-def on_message_shutdown(client, userdata, message):
-    if not message.retain:
-        system("systemctl poweroff")
-
 def on_connect(client, userdata, flags, rc):
     print("Connection returned result: " + mqtt.connack_string(rc))
     client.subscribe(TOPIC_ANIM)
-    client.subscribe(TOPIC_REBOOT)
-    client.subscribe(TOPIC_SHUTDOWN)
     client.publish(TOPIC_LWT, 'online', 0, True)
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
 mqttc.message_callback_add(TOPIC_ANIM, on_message_animation)
-mqttc.message_callback_add(TOPIC_REBOOT, on_message_reboot)
-mqttc.message_callback_add(TOPIC_SHUTDOWN, on_message_shutdown)
 mqttc.will_set(TOPIC_LWT, 'offline', 0, True)
 
 if MQTT_USERNAME != "":
