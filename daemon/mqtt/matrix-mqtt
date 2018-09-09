@@ -67,9 +67,12 @@ def on_message_animation(client, userdata, message):
     print('Aye, aye, captain!')
 
 def on_connect(client, userdata, flags, rc):
-    print("Connection returned result: " + mqtt.connack_string(rc))
-    client.subscribe(TOPIC_ANIM)
-    client.publish(TOPIC_LWT, 'online', 0, True)
+    if rc == 0:
+        print("Connection returned result: " + mqtt.connack_string(rc))
+        client.subscribe(TOPIC_ANIM)
+        client.publish(TOPIC_LWT, 'online', 0, True)
+    else:
+        print("MqTTGateway: Bad connection Returned code=", rc)
 
 mqttc = mqtt.Client()
 mqttc.on_connect = on_connect
