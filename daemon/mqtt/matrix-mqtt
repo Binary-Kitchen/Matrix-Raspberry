@@ -74,7 +74,7 @@ def on_connect(client, userdata, flags, rc):
     else:
         print("MqTTGateway: Bad connection Returned code=", rc)
 
-mqttc = mqtt.Client()
+mqttc = mqtt.Client(client_id='matrix')
 mqttc.on_connect = on_connect
 mqttc.message_callback_add(TOPIC_ANIM, on_message_animation)
 mqttc.will_set(TOPIC_LWT, 'offline', 0, True)
