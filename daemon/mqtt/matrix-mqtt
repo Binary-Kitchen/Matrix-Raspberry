@@ -30,6 +30,8 @@ TOPIC_BASE = 'Kitchen/Matrix/'
 TOPIC_ANIM = TOPIC_BASE + 'Animation'
 TOPIC_LWT = TOPIC_BASE + 'lwt'
 
+DEFAULT_ANIMATION = 1
+
 ANIMATION_DICT = {
     1: 'matrix-clock',
     2: 'matrix-analogclock',
@@ -44,10 +46,8 @@ ANIMATION_DICT = {
 
 cur_anim_pid = -1
 
-def on_message_animation(client, userdata, message):
+def change_animation(no):
     global cur_anim_pid
-
-    no = int(message.payload.decode("utf-8"))
 
     if no == 0:
         if cur_anim_pid != -1:
@@ -58,22 +58,27 @@ def on_message_animation(client, userdata, message):
     if no not in ANIMATION_DICT:
         print('Go home kiddy!')
         return
-    
+
     if cur_anim_pid != -1:
         kill(cur_anim_pid, signal.SIGKILL)
-    
+
     proc = subprocess.Popen([ANIMATION_DICT.get(no), '-s', 'localhost'])
     cur_anim_pid = proc.pid
     print('Aye, aye, captain!')
 
+def on_message_animation(client, userdata, message):
+	no = int(message.payload.decode("utf-8"))
+	change_animation(no)
+
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("Connection returned result: " + mqtt.connack_string(rc))
+        print("MqTT: Connection returned result: " + mqtt.connack_string(rc))
         client.subscribe(TOPIC_ANIM)
         client.publish(TOPIC_LWT, 'online', 0, True)
     else:
-        print("MqTTGateway: Bad connection Returned code=", rc)
+        print("MqTT: Bad connection Returned code=", rc)
 
+change_animation(DEFAULT_ANIMATION)
 mqttc = mqtt.Client(client_id='matrix')
 mqttc.on_connect = on_connect
 mqttc.message_callback_add(TOPIC_ANIM, on_message_animation)
