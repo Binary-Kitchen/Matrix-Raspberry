@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/sbin/matrix-mqtt
+ExecStart=matrix-mqtt
 Nice=10
 
 [Install]

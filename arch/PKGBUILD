@@ -1,0 +1,22 @@
+# Author: Ralf Ramsauer <ralf@binary-kitchen.de>
+
+pkgname=Matrix-Raspberry
+pkgver=0.3
+pkgrel=1
+pkgdesc="Binary Kitchen's Matrix"
+arch=('any')
+url="https://github.com/Binary-Kitchen/${pkgname}"
+license=(GPL)
+depends=('wiringpi' 'python-paho-mqtt')
+source=("git+https://github.com/Binary-Kitchen/${pkgname}.git#branch=next")
+sha256sums=('SKIP')
+
+build() {
+	cd "$srcdir/$pkgname/"
+	make
+}
+
+package() {
+	cd "$srcdir/$pkgname/"
+	make PREFIX=/usr sysconfdir=/etc DESTDIR="$pkgdir" install
+}

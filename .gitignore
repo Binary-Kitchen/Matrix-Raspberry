@@ -1,1 +1,7 @@
-CMakeLists.txt.user
+arch/pkg
+arch/src
+arch/Matrix-Raspberry
+arch/*xz
+config.h
+matrixd
+*.o

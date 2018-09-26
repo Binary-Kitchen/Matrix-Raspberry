@@ -7,16 +7,14 @@
 #include <netinet/in.h>
 #include <errno.h>
 
-#include <config.h>
+#include "../config.h"
 
 #include "74hc595.h"
 #include "matrix.h"
 
 #define REMOTE_RET_ERROR 0xff
 
-static const char hello_str[] = "Hello, this Kitchen-Matrix "
-	MATRIXD_VERSION_MAJOR "." MATRIXD_VERSION_MINOR
-	" (sources: " MATRIXD_GIT_BRANCH "-" MATRIXD_GIT_COMMIT_HASH ")";
+static const char hello_str[] = "Hello, this Kitchen-Matrix " VERSION;
 
 enum matrix_cmd {
 	MATRIX_MODE_MONOCHROME = 1,

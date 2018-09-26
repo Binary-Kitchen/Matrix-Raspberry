@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/sbin/matrixd
+ExecStart=matrixd
 Nice=-15
 
 [Install]
